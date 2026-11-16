@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0c0a">
+<title>Buku Jahit Rida · Noir</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Rida Noir"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="Buku pesanan, nota, kuitansi & arus kas Rida Roemah Jahit.">
+<script>(function(){var p="dark";try{p=localStorage.getItem("rida-mode-noir")||p}catch(e){}if(p==="auto")p=(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";document.documentElement.dataset.mode=p})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="../base.css">
+<style>
+
+/* A — Noir Atelier: hitam pekat + emas, persis karakter logo */
+:root{--bg:#0d0c0a;--surface:#15130f;--surface2:#1a1712;--soft:#201c16;--ink:#efe6d6;--muted:#9a8f7d;--line:#2a251d;--line-strong:#3a3328;
+--accent:#c9a66b;--accent-t:#d9b97f;--accent-ink:#14110c;--brand-ink:#efe6d6;--focus:rgba(201,166,107,.16);--hover:rgba(239,230,214,.04);
+--input-bg:#110f0c;--side-bg:#0a0907;--side-ink:#efe6d6;--side-muted:#8b8070;--nav-on:#1c1812;--bnav-bg:rgba(13,12,10,.92);--top-bg:rgba(13,12,10,.85);
+--hero-bg:radial-gradient(120% 140% at 100% 0%,#2a2117 0%,#16120d 55%,#100d0a 100%);--hero-ink:#f3ead9;--hero-muted:#a8987e;--hero-line:rgba(201,166,107,.25);
+--bar-bg:#c9a66b;--bar-ink:#14110c;
+--c-in:#c9a66b;--c-out:#5b4e3c;--c-line:#efe6d6;--c-in-t:#cfb27a;--c-out-t:#e08a74;--grid:rgba(239,230,214,.06);
+--ok-bg:rgba(201,166,107,.12);--warn:#e2b25c;--warn-bg:rgba(226,178,92,.12);--bad-bg:rgba(224,138,116,.13);
+--r:14px;--r-sm:10px;--r-btn:999px;--r-in:10px;--shadow:none;
+--f-display:'Cormorant Garamond',Georgia,serif;--f-body:'Manrope',system-ui,sans-serif;--f-num:'Manrope',system-ui,sans-serif;
+--h-weight:500;--h2-weight:600;--h2-size:22px;--h-track:.005em;--num-weight:600}
+.hero-l:after{content:"";position:absolute;right:-60px;top:-40px;width:240px;height:300px;border:1px solid rgba(201,166,107,.22);border-radius:120px 120px 0 0}
+.hero-l:before{content:"";position:absolute;right:-40px;top:-20px;width:200px;height:280px;border:1px solid rgba(201,166,107,.12);border-radius:100px 100px 0 0}
+.h1{font-style:italic}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.side{background-image:linear-gradient(180deg,rgba(201,166,107,.05),transparent 40%)}
+input[type=date]{color-scheme:dark}
+/* Noir — mode terang: gading hangat, emas tua, panel saldo tetap hitam */
+html[data-mode=light]{--bg:#f5f1ea;--surface:#fffdf9;--surface2:#faf6ef;--soft:#f0e9de;--ink:#1d1a16;--muted:#7a6f60;--line:#e7dece;--line-strong:#d8ccb8;
+--accent:#b08a4f;--accent-t:#8c6a34;--accent-ink:#fffaf1;--brand-ink:#1d1a16;--focus:rgba(176,138,79,.15);--hover:rgba(29,26,22,.035);
+--input-bg:#fffdf9;--side-bg:#efe8dc;--side-ink:#1d1a16;--side-muted:#7a6f60;--nav-on:#fffdf9;--bnav-bg:rgba(255,253,249,.94);--top-bg:rgba(245,241,234,.88);
+--bar-bg:#1d1a16;--bar-ink:#f3ead9;
+--c-in:#b08a4f;--c-out:#d9ccb6;--c-line:#1d1a16;--c-in-t:#7d6230;--c-out-t:#ad4b39;--grid:rgba(29,26,22,.07);
+--ok-bg:#f1ead8;--warn:#94600f;--warn-bg:#f8edd6;--bad-bg:#f6e3dd;--shadow:0 1px 2px rgba(29,26,22,.04)}
+html[data-mode=light] .side{background-image:none}
+html[data-mode=light] input[type=date]{color-scheme:light}
+html[data-mode=light] .chip.on{color:#fffaf1}
+
+</style>
+</head>
+<body style="padding-top:env(safe-area-inset-top)" class="layout-sidebar">
+<div id="app"></div>
+<script>window.THEME={layout:'sidebar',name:'noir',defMode:'dark',standalone:true};</script>
+<script src="../app.js"></script>
+</body>
+</html>
