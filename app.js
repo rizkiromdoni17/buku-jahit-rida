@@ -76,7 +76,7 @@ colRef(c) { return this.db.doc('data/users/' + this.uid + '/book').collection(c)
 setRef() { return this.db.doc('data/users/' + this.uid + '/settings'); },
 async init() {
 this.loadLocal();
-if (STANDALONE) { try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {} this.ready = true; render(); return; }
+if (STANDALONE) { try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {} this.ready = true; render(); if (window.RJ_FB) FB.init(); return; }
 let claude = null;
 for (let i = 0; i < 15 && !claude; i++) { if (window.claude && window.claude.use) claude = window.claude; else await new Promise(r => setTimeout(r, 100)); }
 if (!claude) { this.ready = true; render(); return; }
@@ -108,19 +108,93 @@ render();
 async put(c, obj) {
 obj = JSON.parse(JSON.stringify(obj));
 this.data[c][obj.id] = obj; schedule();
+if (this.mode === 'fire') return FB.set(c, obj);
 if (this.mode === 'cloud') { try { await this.colRef(c).doc(obj.id).set(obj); } catch (e) { failWrite(e); } }
 else this.saveLocal();
 },
 async del(c, id) {
 delete this.data[c][id]; schedule();
+if (this.mode === 'fire') return FB.del(c, id);
 if (this.mode === 'cloud') { try { await this.colRef(c).doc(id).delete(); } catch (e) { failWrite(e); } }
 else this.saveLocal();
 },
 async saveSet(patch) {
 this.set = { ...this.set, ...patch }; schedule();
+if (this.mode === 'fire') return FB.setSettings(this.set);
 if (this.mode === 'cloud') { try { await this.setRef().set(JSON.parse(JSON.stringify(this.set))); } catch (e) { failWrite(e); } }
 else this.saveLocal();
 }
+};
+const FB = {
+m: null, user: null, unsubs: [], busy: false,
+async load() {
+if (this.m) return this.m;
+const V = '10.14.1', base = 'https://www.gstatic.com/firebasejs/' + V + '/';
+const [app, auth, fs] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
+const a = app.initializeApp(window.RJ_FB);
+let db; try { db = fs.initializeFirestore(a, { localCache: fs.persistentLocalCache({ tabManager: fs.persistentMultipleTabManager() }) }); } catch (e) { db = fs.getFirestore(a); }
+const au = auth.getAuth(a);
+this.m = { auth, fs, au, db }; return this.m;
+},
+async init() {
+try {
+const { auth, au } = await this.load();
+try { await auth.getRedirectResult(au); } catch (e) {}
+auth.onAuthStateChanged(au, u => { if (u) this.start(u); else this.stop(); });
+} catch (e) { S.note = 'Sinkron belum bisa dimuat (periksa internet). Data tetap tersimpan di perangkat ini.'; schedule(); }
+},
+async signIn() {
+try {
+const { auth, au } = await this.load();
+const p = new auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' });
+try { await auth.signInWithPopup(au, p); }
+catch (e) { if (/popup|operation-not-supported|cancelled-popup/.test(e.code || '')) await auth.signInWithRedirect(au, p); else throw e; }
+} catch (e) { if (e.code !== 'auth/popup-closed-by-user') toast('Gagal masuk: ' + (e.code || e.message)); }
+},
+async signOut() { const { auth, au } = await this.load(); await auth.signOut(au); toast('Keluar dari akun. Data akun tidak terhapus.'); },
+path(c) { return ['users', this.user.uid, c]; },
+stop() {
+this.unsubs.forEach(f => f()); this.unsubs = []; this.user = null;
+if (S.mode === 'fire') { S.mode = 'local'; COLS.forEach(c => S.data[c] = {}); S.set = { ...DEFAULT_SET }; S.loadLocal(); }
+schedule();
+},
+start(u) {
+if (this.user && this.user.uid === u.uid) return;
+const { fs, db } = this.m; this.user = u;
+const localHas = COLS.some(c => Object.keys(S.data[c]).length);
+const localSnap = localHas ? { data: JSON.parse(JSON.stringify(S.data)), set: { ...S.set } } : null;
+S.mode = 'fire'; S.ready = false; COLS.forEach(c => S.data[c] = {}); S.set = { ...DEFAULT_SET };
+let pending = COLS.length + 1, cloudCount = 0;
+const done = () => { if (--pending === 0) { S.ready = true; schedule(); if (localSnap && cloudCount === 0) this.offerMigrate(localSnap); } };
+COLS.forEach(c => {
+let first = true;
+this.unsubs.push(fs.onSnapshot(fs.collection(db, ...this.path(c)), snap => {
+const o = {}; snap.docs.forEach(d => { o[d.id] = d.data(); }); S.data[c] = o;
+if (first) { first = false; cloudCount += snap.size; done(); } else schedule();
+}, err => { S.note = 'Sinkron terputus (' + err.code + ').'; if (first) { first = false; done(); } schedule(); }));
+});
+let firstS = true;
+this.unsubs.push(fs.onSnapshot(fs.doc(db, 'users', u.uid, 'meta', 'settings'), snap => {
+S.set = { ...DEFAULT_SET, ...(snap.exists() ? snap.data() : {}) };
+if (firstS) { firstS = false; if (snap.exists()) cloudCount++; done(); } else schedule();
+}, () => { if (firstS) { firstS = false; done(); } }));
+schedule();
+},
+async offerMigrate(snap) {
+const n = Object.keys(snap.data.orders).length, k = Object.keys(snap.data.cash).length;
+if (!(await confirmBox('Pindahkan data perangkat ini ke akun?', 'Akun ' + esc(this.user.email || '') + ' masih kosong. Perangkat ini punya ' + n + ' pesanan dan ' + k + ' transaksi kas. Pindahkan supaya muncul di semua perangkat?', 'Pindahkan'))) return;
+await this.bulk(snap); toast('Data dipindahkan ke akun ✓');
+},
+async bulk(snap) {
+const { fs, db } = this.m; let b = fs.writeBatch(db), n = 0;
+const flush = async () => { await b.commit(); b = fs.writeBatch(db); n = 0; };
+for (const c of COLS) for (const o of Object.values(snap.data[c] || {})) { b.set(fs.doc(db, ...this.path(c), o.id), JSON.parse(JSON.stringify(o))); if (++n >= 400) await flush(); }
+if (snap.set) b.set(fs.doc(db, 'users', this.user.uid, 'meta', 'settings'), JSON.parse(JSON.stringify(snap.set)));
+await flush();
+},
+set(c, obj) { const { fs, db } = this.m; return fs.setDoc(fs.doc(db, ...this.path(c), obj.id), obj).catch(failWrite); },
+del(c, id) { const { fs, db } = this.m; return fs.deleteDoc(fs.doc(db, ...this.path(c), id)).catch(failWrite); },
+setSettings(st) { const { fs, db } = this.m; return fs.setDoc(fs.doc(db, 'users', this.user.uid, 'meta', 'settings'), JSON.parse(JSON.stringify(st))).catch(failWrite); }
 };
 function failWrite(e) { toast(e && e.code === 'quota_exceeded' ? 'Kapasitas data penuh. Hapus data lama atau unduh backup.' : 'Gagal menyimpan (' + ((e && e.code) || 'error') + '). Coba lagi.'); }
 const orders = () => Object.values(S.data.orders).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -241,7 +315,7 @@ function schedule() { if (rq) return; rq = requestAnimationFrame(() => { rq = 0;
 function shell(content) {
 const active = { order: 'pesanan', nota: 'pesanan', kuitansi: 'pesanan', edit: 'pesanan', baru: 'pesanan', cust: 'pelanggan' }[route.v] || route.v;
 const navLinks = NAV.map(n => '<a href="#' + n.k + '" class="nav-a ' + (active === n.k ? 'on' : '') + '">' + ico(n.i) + '<span>' + n.l + '</span></a>').join('');
-const sync = S.mode === 'cloud' ? '<span class="sync ok" title="Data tersimpan di akun Anda dan bisa dibuka di komputer & HP">● Tersinkron</span>' : (STANDALONE ? '<span class="sync loc" title="Data tersimpan di perangkat ini. Unduh backup secara rutin.">● Di perangkat ini</span>' : '<span class="sync loc" title="Data hanya tersimpan di perangkat/peramban ini">● Mode lokal</span>');
+const sync = S.mode === 'fire' ? '<button class="sync ok" data-act="go-akun" title="' + esc(FB.user && FB.user.email || '') + '">● Tersinkron</button>' : (STANDALONE && window.RJ_FB) ? '<button class="sync loc" data-act="fb-in" title="Masuk dengan Google untuk sinkron HP & komputer">● Masuk untuk sinkron</button>' : S.mode === 'cloud' ? '<span class="sync ok" title="Data tersimpan di akun Anda dan bisa dibuka di komputer & HP">● Tersinkron</span>' : (STANDALONE ? '<span class="sync loc" title="Data tersimpan di perangkat ini. Unduh backup secara rutin.">● Di perangkat ini</span>' : '<span class="sync loc" title="Data hanya tersimpan di perangkat/peramban ini">● Mode lokal</span>');
 const note = S.note ? '<div class="banner warn">' + esc(S.note) + '</div>' : '';
 if (T.layout === 'topbar') {
 return '<header class="top"><div class="top-in">' + brandBlock() + '<nav class="top-nav">' + navLinks + '</nav><div class="top-r">' + sync + modeBtn() + '<a href="#baru" class="btn primary sm hide-m">+ Pesanan</a></div></div></header>' +
@@ -629,7 +703,8 @@ html += '<div class="grid2"><section class="card"><div class="card-h"><h2>Profil
 DOMPET.map(d => '<label class="field"><span>Saldo awal ' + d.l + '</span><input class="input money" inputmode="numeric" data-sa="' + d.k + '" value="' + (num((s.saldoAwal || {})[d.k]) ? num(s.saldoAwal[d.k]).toLocaleString('id-ID') : '') + '" placeholder="0"></label>').join('') +
 '<label class="field"><span>PIN untuk menghapus data</span><input class="input" type="password" inputmode="numeric" id="pinSet" placeholder="' + (s.pin ? '•••• (sudah diatur)' : 'Kosong = tanpa PIN') + '" autocomplete="new-password"></label></div>' +
 '<div class="doc-btns"><button class="btn primary" data-act="save-saldo">Simpan</button></div>' +
-'<p class="muted small sync-note">' + (S.mode === 'cloud' ? '✓ Data tersimpan di akun Claude Anda — buka tautan yang sama di komputer atau HP (masuk dengan akun yang sama) dan datanya ikut.' : (STANDALONE ? 'Data tersimpan di perangkat ini saja (tidak ikut ke HP/komputer lain). Unduh backup minimal seminggu sekali; untuk pindah perangkat, unduh backup lalu “Pulihkan dari backup” di perangkat baru.' : 'Mode lokal: data hanya tersimpan di peramban ini. Buka halaman ini dari tautan artifact claude.ai agar tersinkron antara komputer & HP. Rajin unduh backup.')) + '</p></section></div>';
+'<p class="muted small sync-note">' + (S.mode === 'fire' ? '✓ Tersinkron dengan akun Google ' + esc(FB.user.email || '') + '.' : S.mode === 'cloud' ? '✓ Data tersimpan di akun Claude Anda — buka tautan yang sama di komputer atau HP (masuk dengan akun yang sama) dan datanya ikut.' : (STANDALONE ? 'Data tersimpan di perangkat ini saja (tidak ikut ke HP/komputer lain). Unduh backup minimal seminggu sekali; untuk pindah perangkat, unduh backup lalu “Pulihkan dari backup” di perangkat baru.' : 'Mode lokal: data hanya tersimpan di peramban ini. Buka halaman ini dari tautan artifact claude.ai agar tersinkron antara komputer & HP. Rajin unduh backup.')) + '</p></section></div>';
+if (STANDALONE && window.RJ_FB) html += '<section class="card" id="akun"><div class="card-h"><h2>Akun & sinkron</h2></div>' + (S.mode === 'fire' ? '<p>Masuk sebagai <b>' + esc(FB.user.email || FB.user.displayName || '') + '</b>. Data tersinkron otomatis di semua HP & komputer yang masuk dengan akun Google ini, dan tetap bisa dipakai tanpa internet.</p><div class="doc-btns"><button class="btn ghost" data-act="fb-out">Keluar</button></div>' : '<p class="muted">Masuk dengan akun Google supaya pesanan, kas, dan pelanggan sama di HP dan komputer. Data di perangkat ini bisa dipindahkan ke akun setelah masuk.</p><div class="doc-btns"><button class="btn primary" data-act="fb-in">Masuk dengan Google</button></div>') + '</section>';
 const pref = getPref();
 html += '<section class="card"><div class="card-h"><h2>Tampilan</h2></div><div class="seg modeseg">' + [['light', 'Terang'], ['dark', 'Gelap'], ['auto', 'Ikuti perangkat']].map(m => '<button class="' + (pref === m[0] ? 'on' : '') + '" data-act="mode-set" data-v="' + m[0] + '">' + m[1] + '</button>').join('') + '</div><p class="muted small" style="margin-top:10px">Pilihan tampilan disimpan di perangkat ini. Nota & kuitansi tetap dicetak di kertas terang.</p></section>';
 // daftar harga
@@ -684,7 +759,7 @@ toast('Data contoh dimuat.');
 }
 function render() {
 const app = $('#app'); if (!app) return;
-if (!S.ready && S.mode === 'cloud') { app.innerHTML = shell('<div class="loading">' + logoSVG('logo') + '<p>Membuka buku…</p></div>'); return; }
+if (!S.ready && (S.mode === 'cloud' || S.mode === 'fire')) { app.innerHTML = shell('<div class="loading">' + logoSVG('logo') + '<p>Membuka buku…</p></div>'); return; }
 // jangan rerender form yang sedang diketik
 const ae = document.activeElement;
 if ((route.v === 'baru' || route.v === 'edit') && $('#oform') && ae && ae.closest && ae.closest('#oform') && !render._force) { refreshSum(); return; }
@@ -752,6 +827,9 @@ const a = b.dataset.act, idx = b.dataset.idx != null ? +b.dataset.idx : null;
 const it = draft && idx != null ? draft.items[idx] : null;
 switch (a) {
 case 'demo': return loadDemo();
+case 'fb-in': return FB.signIn();
+case 'fb-out': { if (await confirmBox('Keluar dari akun?', 'Data tetap aman di akun Google dan muncul lagi saat masuk kembali.', 'Keluar')) FB.signOut(); return; }
+case 'go-akun': return go('atur');
 case 'mode-toggle': return setPref(effMode() === 'dark' ? 'light' : 'dark');
 case 'mode-set': return setPref(b.dataset.v);
 case 'fstatus': filt.status = b.dataset.v; return forceRender();

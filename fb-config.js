@@ -1,0 +1,1 @@
+window.RJ_FB={apiKey:"AIzaSyC5QZNSN1u3Gkk9YAmToUJXMe_6T7YLfHk",authDomain:"buku-jahit-rida.firebaseapp.com",projectId:"buku-jahit-rida",storageBucket:"buku-jahit-rida.firebasestorage.app",messagingSenderId:"676242649028",appId:"1:676242649028:web:a90c34625772412af67e91"};
