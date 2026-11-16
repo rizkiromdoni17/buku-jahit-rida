@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4efe6">
+<title>Buku Jahit Rida · Ivory</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Rida Ivory"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Buku pesanan, nota, kuitansi & arus kas Rida Roemah Jahit.">
+<script>(function(){var p="light";try{p=localStorage.getItem("rida-mode-ivory")||p}catch(e){}if(p==="auto")p=(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";document.documentElement.dataset.mode=p})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="../base.css">
+<style>
+
+/* B — Ivory Maison: gading terang, espresso & emas tembaga, editorial */
+:root{--bg:#f4efe6;--surface:#fffdf9;--surface2:#faf6ef;--soft:#f1ebe0;--ink:#2a221c;--muted:#857869;--line:#e8dfd1;--line-strong:#d9cdbb;
+--accent:#2a221c;--accent-t:#8a6a3b;--accent-ink:#f8f1e4;--brand-ink:#2a221c;--focus:rgba(168,133,79,.14);--hover:rgba(42,34,28,.035);
+--input-bg:#fffdf9;--side-bg:#efe8dc;--side-ink:#2a221c;--side-muted:#857869;--nav-on:#fffdf9;--bnav-bg:rgba(255,253,249,.94);--top-bg:rgba(244,239,230,.88);
+--hero-bg:#2a221c;--hero-ink:#f6eee0;--hero-muted:#bfae95;--hero-line:rgba(246,238,224,.18);
+--bar-bg:#2a221c;--bar-ink:#f6eee0;
+--c-in:#a8854f;--c-out:#d7c6ad;--c-line:#2a221c;--c-in-t:#5f7a4a;--c-out-t:#a8473a;--grid:rgba(42,34,28,.07);
+--ok-bg:#e9eedf;--warn:#9a6414;--warn-bg:#f7ecd6;--bad-bg:#f6e2dc;
+--r:4px;--r-sm:4px;--r-btn:2px;--r-in:2px;--shadow:0 1px 0 rgba(42,34,28,.04);
+--f-display:'Bodoni Moda',Didot,Georgia,serif;--f-body:'DM Sans',system-ui,sans-serif;--f-num:'Bodoni Moda',Didot,Georgia,serif;
+--h-weight:500;--h2-weight:500;--h2-size:21px;--h-track:-.01em;--num-weight:500}
+.brand,.logo{color:#a8854f}.brand-t i{color:#a8854f}
+.btn{text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:700;padding:12px 18px}
+.btn.sm{font-size:11px}
+.top-nav .nav-a{text-transform:uppercase;letter-spacing:.12em;font-size:12px;border-radius:0;padding:8px 10px;border-bottom:1px solid transparent}
+.top-nav .nav-a.on{background:none;border-bottom-color:#a8854f;color:var(--ink)}
+.h1{font-size:clamp(34px,5vw,58px)}
+.ph{border-bottom:1px solid var(--line-strong);padding-bottom:20px}
+.card{border-color:var(--line)}
+.hero{border:0;background:transparent;gap:14px}
+.hero-l{border-radius:4px}
+.hero-r{background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.hero-l:after{content:"RIDA";position:absolute;right:-6px;bottom:-34px;font-family:'Bodoni Moda',serif;font-size:120px;letter-spacing:.12em;color:rgba(246,238,224,.05);line-height:1}
+.sec-t span{border-radius:0}
+.seg{border-radius:2px}
+.chip{border-radius:2px}
+.form-bar{border-radius:4px}
+.fab{border-radius:4px}
+.badge{border-radius:2px;text-transform:uppercase;letter-spacing:.06em;font-size:10.5px}
+.ocard:hover{transform:none;border-color:#a8854f}
+.ono{color:#a8854f}
+/* Ivory — mode gelap: espresso, krem & emas; panel saldo jadi krem (terbalik) */
+html[data-mode=dark]{--bg:#181411;--surface:#211c18;--surface2:#251f1a;--soft:#2b241e;--ink:#f1e8da;--muted:#a5978a;--line:#322a23;--line-strong:#44392f;
+--accent:#d8bc8c;--accent-t:#d8bc8c;--accent-ink:#1a1512;--brand-ink:#f1e8da;--focus:rgba(216,188,140,.14);--hover:rgba(241,232,218,.04);
+--input-bg:#1c1814;--side-bg:#14110e;--side-ink:#f1e8da;--side-muted:#a5978a;--nav-on:#211c18;--bnav-bg:rgba(24,20,17,.94);--top-bg:rgba(24,20,17,.86);
+--hero-bg:#efe5d4;--hero-ink:#2a221c;--hero-muted:#7e6f5f;--hero-line:rgba(42,34,28,.16);
+--bar-bg:#d8bc8c;--bar-ink:#1a1512;
+--c-in:#c9a66b;--c-out:#5a4b3d;--c-line:#f1e8da;--c-in-t:#b3c995;--c-out-t:#e5937f;--grid:rgba(241,232,218,.07);
+--ok-bg:rgba(179,201,149,.12);--warn:#e3b45f;--warn-bg:rgba(227,180,95,.12);--bad-bg:rgba(229,147,127,.13);--shadow:none}
+html[data-mode=dark] .hero-l:after{color:rgba(42,34,28,.06)}
+html[data-mode=dark] .top-nav .nav-a.on{border-bottom-color:#d8bc8c}
+html[data-mode=dark] input[type=date]{color-scheme:dark}
+
+</style>
+</head>
+<body style="padding-top:env(safe-area-inset-top)" class="layout-topbar">
+<div id="app"></div>
+<script>window.THEME={layout:'topbar',name:'ivory',defMode:'light',standalone:true};</script>
+<script src="../app.js"></script>
+</body>
+</html>
