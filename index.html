@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buku Jahit — Rida Roemah Jahit</title>
+<meta name="description" content="Aplikasi pesanan, nota, kuitansi & arus kas untuk Rida Roemah Jahit.">
+<link rel="icon" href="favicon.png"><meta name="theme-color" content="#0d0c0a">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,system-ui,sans-serif;background:#0d0c0a;color:#efe6d6;min-height:100vh;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:56px 22px 70px}
+.brand{display:flex;align-items:center;gap:14px;color:#c9a66b}
+.brand svg{width:44px;height:56px}
+.brand b{font-family:'Cormorant Garamond',serif;font-size:30px;letter-spacing:.2em;color:#efe6d6;display:block;line-height:1;font-weight:600}
+.brand i{font-family:'Cormorant Garamond',serif;color:#c9a66b;letter-spacing:.05em}
+h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;font-size:clamp(38px,6vw,64px);line-height:1.05;margin:44px 0 14px}
+.lead{color:#a8987e;max-width:620px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:40px 0}
+.card{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid #2a251d;transition:.2s;text-decoration:none;color:inherit}
+.card:hover{border-color:#c9a66b;transform:translateY(-2px)}
+.pv{height:170px;padding:20px;display:flex;flex-direction:column;justify-content:space-between}
+.noir .pv{background:radial-gradient(120% 140% at 100% 0%,#2a2117,#100d0a)}
+.ivory .pv{background:#f4efe6;color:#2a221c}
+.pv small{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.pv b{font-size:34px;font-weight:600}
+.ivory .pv b{font-family:'Cormorant Garamond',serif;font-weight:500}
+.sw{display:flex;gap:6px}.sw i{width:22px;height:22px;border-radius:50%;border:1px solid rgba(128,128,128,.3)}
+.info{padding:18px 20px;background:#15130f}
+.info h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600}
+.info p{color:#a8987e;font-size:14px}
+.go{margin-top:12px;display:inline-block;padding:10px 18px;border-radius:999px;background:#c9a66b;color:#14110c;font-weight:700;font-size:14px}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.step{padding:22px;border:1px solid #2a251d;border-radius:16px;background:#15130f}
+.step h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;margin-bottom:8px}
+.step ol{padding-left:20px;color:#cfc3ae;font-size:14px}.step li{margin:4px 0}
+.note{margin-top:22px;padding:16px 18px;border-radius:12px;background:rgba(226,178,92,.1);color:#e2c58f;font-size:14px}
+footer{margin-top:40px;color:#6f6556;font-size:12.5px}
+@media(max-width:720px){.cards,.steps{grid-template-columns:1fr}.wrap{padding-top:34px}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="brand"><svg viewBox="0 0 120 150" fill="none"><path d="M14 146V58a46 46 0 0 1 92 0v88" stroke="currentColor" stroke-width="2.2"/><path d="M22 146V60a38 38 0 0 1 76 0v86" stroke="currentColor" opacity=".7"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="60" cy="38" r="4"/><path d="M60 42v5"/><path d="M50 49c-4 1-9 3-9 9 0 7 6 11 6 18 0 5-3 8-3 12 0 10 7 14 16 14s16-4 16-14c0-4-3-7-3-12 0-7 6-11 6-18 0-6-5-8-9-9-3 2-6 3-10 3s-7-1-10-3z"/><path d="M60 102v24M52 126h16M60 126l-10 10M60 126l10 10"/></g></svg><div><b>RIDA</b><i>Roemah Jahit</i></div></div>
+<h1>Buku Jahit</h1>
+<p class="lead">Catat pesanan & ukuran, kirim nota ke WhatsApp tanpa salah harga, dan pantau arus kas — langsung dari HP atau komputer. Pilih tampilan yang Anda suka; keduanya punya mode terang & gelap.</p>
+<div class="cards">
+<a class="card noir" href="noir/"><div class="pv"><div class="sw"><i style="background:#0d0c0a"></i><i style="background:#c9a66b"></i><i style="background:#efe6d6"></i></div><div><small>Saldo kas</small><br><b>Rp1.115.000</b></div></div><div class="info"><h2>Noir</h2><p>Hitam & emas, mengikuti logo. Menu samping di komputer.</p><span class="go">Buka Noir →</span></div></a>
+<a class="card ivory" href="ivory/"><div class="pv"><div class="sw"><i style="background:#f4efe6"></i><i style="background:#2a221c"></i><i style="background:#a8854f"></i></div><div><small>Saldo kas</small><br><b>Rp1.115.000</b></div></div><div class="info"><h2>Ivory</h2><p>Gading & espresso, gaya editorial. Menu atas.</p><span class="go">Buka Ivory →</span></div></a>
+</div>
+<div class="steps">
+<div class="step"><h3>Pasang di Android</h3><ol><li>Buka Noir atau Ivory di Chrome.</li><li>Ketuk menu ⋮ → <b>Tambahkan ke layar utama</b> / <b>Instal aplikasi</b>.</li><li>Buka dari ikon RIDA — tampil layar penuh seperti aplikasi.</li></ol></div>
+<div class="step"><h3>Pasang di iPhone</h3><ol><li>Buka Noir atau Ivory di <b>Safari</b>.</li><li>Ketuk tombol Bagikan ⬆ → <b>Tambah ke Layar Utama</b>.</li><li>Buka dari ikon RIDA di layar utama.</li></ol></div>
+</div>
+<p class="note">Data tersimpan di masing-masing perangkat (tidak ikut ke HP/komputer lain) dan Noir & Ivory punya buku terpisah. Unduh backup secara rutin dari menu <b>Atur</b>; untuk pindah perangkat, pulihkan file backup di perangkat baru.</p>
+<footer>Dibuat oleh V1BE Studio untuk Rida Roemah Jahit.</footer>
+</div></body></html>
